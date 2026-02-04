@@ -60,8 +60,9 @@ This document describes the instruction set architecture (ISA) of the **CUSTOM R
 | 20 | JMPNZ | -- | Jump if Z = 0 |
 | 21 | JMPNZPR | -- | Relative jump if Z = 0 |
 | 22 | JMPC | -- | Jump if C = 1 |
-| 23 | JMPNC | -- | Jump if C = 0 |
-| 24 | JMPCPR | -- | Relative jump if C = 1 |
+| 23 | JMPCPR | -- | Relative jump if C = 1 |
+| 24 | JMPNC | -- | Jump if C = 0 |
+| 25 | JMPNCPR | -- | Relative jump if C = 0 |
 
 ---
 
@@ -69,8 +70,8 @@ This document describes the instruction set architecture (ISA) of the **CUSTOM R
 
 | # | Opcode | Flags | Description |
 |---|--------|-------|-------------|
-| 25 | PUSH | -- | Push Rx onto stack |
-| 26 | POP | -- | Pop stack into Rx |
+| 26 | PUSH | -- | Push Rx onto stack |
+| 27 | POP | -- | Pop stack into Rx |
 
 ---
 
@@ -78,8 +79,8 @@ This document describes the instruction set architecture (ISA) of the **CUSTOM R
 
 | # | Opcode | Flags | Description |
 |---|--------|-------|-------------|
-| 27 | IN | -- | Rx ← Input port |
-| 28 | OUT | -- | Output port ← Rx |
+| 28 | IN | -- | Rx ← Input port |
+| 29 | OUT | -- | Output port ← Rx |
 
 ---
 
@@ -87,8 +88,8 @@ This document describes the instruction set architecture (ISA) of the **CUSTOM R
 
 | # | Opcode | Flags | Description |
 |---|--------|-------|-------------|
-| 29 | SL | Z, C | Rz ← Rx << 1 |
-| 30 | SR | Z, C | Rz ← Rx >> 1 |
+| 30 | SL | Z, C | Rz ← Rx << 1 |
+| 31 | SR | Z, C | Rz ← Rx >> 1 |
 
 ---
 
