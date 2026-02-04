@@ -1,5 +1,6 @@
 #include "opdata.hpp"
 #include "helper.hpp"
+#include "error.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -41,11 +42,23 @@ bool validate_and_parse_operand(std::string& opr, const Operand type)
     else
     {
         if (*opr.rbegin() == ',') opr.pop_back();
-    
-        if (opr.size() <= 1 || (opr[0] != 'R' && opr[0] != 'r')) return 1;
+
+        auto fail = [&]()
+        {
+            ErrorInfo err{opr, "register not available (use R0-R15)", Error::InvalidRegister};
+            console_error(err);
+            exit(0);
+        };
+        
+        if (opr.size() <= 1 && opr.size() > 3 || (opr[0] != 'R' && opr[0] != 'r')) fail();
+
+        for (size_t i = 1; i < opr.size(); ++i)
+        {
+            if (!std::isdigit(static_cast<unsigned char>(opr[i]))) fail();
+        }
         
         int val = std::stoi(opr.substr(1));
-        if (val > 15) return 1;
+        if (val > 15) fail();
     
         opr = int_to_hex(static_cast<uint8_t>(val));
         opr.erase(opr.begin());
@@ -60,7 +73,7 @@ void parse_data(const std::vector<std::string>& raw, std::vector<std::string>& d
 {
     data.clear();
     
-    for (int i = 0; i < raw.size(); ++i)
+    for (size_t i = 0; i < raw.size(); ++i)
     {
         std::string word = raw[i];
         auto* info = find_opcode(word);
@@ -98,7 +111,12 @@ void parse_data(const std::vector<std::string>& raw, std::vector<std::string>& d
     
 int main(int argc, char* argv[])
 {
-    if (argc < 2) return 1;
+    if (argc < 2)
+    {
+        ErrorInfo err{"input detection", "required first argument is input assembly file.", Error::AssemblyFileMissing};
+        console_error(err);
+        exit(0);
+    }
     
     std::vector<std::string> raw_data, processed_data;
     
@@ -108,5 +126,5 @@ int main(int argc, char* argv[])
     for (std::string str : processed_data) std::cout << str << " ";
     std::cout << std::endl;
     
-    return 0;
+    exit(0);
 }
