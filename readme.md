@@ -1,9 +1,9 @@
 # tcrs - The Custom Risc Assembler (by encrypted_)
 
-**AI Usage Statement:**  
-This project was created entirely without the use of artificial intelligence tools or generative models. Entire codebase is written, as well as maintained manually (by me, for learing purpose).
+**AI Usage Disclaimer:**  
+This project was created entirely without the use of artificial intelligence tools or generative models. Entire codebase is written, as well as maintained manually (by me, for learning purpose). Kindly avoid using generative tools in this project.
 
-This document describes the instruction set architecture (ISA) of **CUSTOM RISC CPU V1**. <br><br>CRC V1 uses general-purpose registers and two status flags:
+This document describes the instruction set architecture (ISA) of **CUSTOM RISC CPU V1**. <br>CRC V1 uses general-purpose registers and two status flags:
 - **Z** (Zero)
 - **C** (Carry)
 
