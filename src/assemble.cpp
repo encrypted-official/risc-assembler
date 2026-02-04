@@ -32,11 +32,11 @@ bool validate_and_parse_operand(std::string& opr, const Operand type)
 {
     if (type == Operand::Imm || type == Operand::Addr)
     {
-        // int val = std::stoi(opr);
-        // if (val > 255) return 1;
-    
-        // opr = int_to_hex(static_cast<uint8_t>(val));
-        // // opr.erase(opr.begin());
+        // todo: invalidate if not pure decimal value.
+        int val = std::stoi(opr);
+        if (val > 255) return 1;
+
+        if (opr.length() <= 1) opr.insert(0, 2 - opr.length(), '0');
     }
     else
     {
@@ -70,10 +70,24 @@ void parse_data(const std::vector<std::string>& raw, std::vector<std::string>& d
             std::string processed_word;
             processed_word += int_to_hex(info->opcode);
 
+            int offset = 1;
             for (int j = 0; j < 4; ++j)
             {
-                Operand type = info->types[j - 1];
-                std::string opr = raw[i + j];
+                Operand type = info->types[j];
+
+                if (type == Operand::None) processed_word += (j == 3 ? "00" : "0");
+                else {
+                    std::string opr = raw[i + offset];
+                    offset++;
+                    
+                    // todo: change loop i to skip remaining operands.
+                    if (validate_and_parse_operand(opr, type) == 1) 
+                    {
+                        break;
+                    }
+
+                    processed_word += opr;
+                }
             }
     
             i += info->operands;
