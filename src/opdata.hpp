@@ -17,7 +17,7 @@ struct OpcodeInfo
 {
     std::string_view name;
     uint8_t opcode, operands;
-    std::array<Operand, 3> types;
+    std::array<Operand, 4> types;
 };
 
 // complete ISA, at compile-time.
@@ -40,7 +40,7 @@ constexpr OpcodeInfo OPCODE[] = {
     {"LD", 11, 2, {Operand::RegD, Operand::None, Operand::None, Operand::Addr}},
     {"LDI", 22, 2, {Operand::RegD, Operand::RegA,  Operand::None, Operand::None}},
     {"STR", 12, 2, {Operand::None, Operand::RegA, Operand::None, Operand::Addr}},
-    {"STRI", 23, 2, {Operand::None, Operand::RegA, Operand::RegB,  Operand::None}},
+    {"STRI", 23, 2, {Operand::None, Operand::RegA, Operand::RegB, Operand::None}},
 
     {"JMP", 13, 1, {Operand::None, Operand::None, Operand::None, Operand::Addr}},
     {"JMPZ", 14, 1, {Operand::None, Operand::None, Operand::None, Operand::Addr}},
