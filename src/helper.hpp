@@ -13,3 +13,13 @@ std::string int_to_hex(uint8_t val)
 
     return s;
 }
+
+bool validate_numeric(std::string str)
+{
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(str[i]))) return 0;
+    }
+
+    return 1;
+}
