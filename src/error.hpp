@@ -6,10 +6,12 @@
 enum class Error
 {
     AssemblyFileMissing,
-    AddressOutOfBound,
-    ImmediateDataOutOfBound,
+    OutOfBoundRegister,
+    OutOfBoundAddress,
+    OutOfBoundImmediateData,
     InvalidRegister,
-    NonNumericValue
+    InvalidAddress,
+    InvalidImmediateData
 };
 
 struct ErrorInfo
@@ -20,7 +22,7 @@ struct ErrorInfo
 
 std::string err_to_str(Error err)
 {
-    std::string cnv[] = {"AssemblyFileMissing", "AddressOutOfBound", "ImmediateDataOutOfBound", "InvalidRegister", "NonNumericValue"};
+    std::string cnv[] = {"AssemblyFileMissing", "OutOfBoundRegister", "OutOfBoundAddress", "OutOfBoundImmediateData", "InvalidRegister", "InvalidAddress", "InvalidImmediateData"};
     return cnv[static_cast<int>(err)];
 }
 
