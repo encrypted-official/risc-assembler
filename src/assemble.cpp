@@ -23,7 +23,8 @@ void fetch_file(const std::string& path, std::vector<std::string>& words)
 
         while (iss >> word)
         {
-            if (word == ";") break;     // ignore comments at fetching phase.
+            // what: ignore comments at fetching phase.
+            if (word == ";") break;
             words.push_back(word);
         }
     }
@@ -33,9 +34,39 @@ bool validate_and_parse_operand(std::string& opr, const Operand type)
 {
     if (type == Operand::Imm || type == Operand::Addr)
     {
-        // todo: invalidate if not pure decimal value.
+        auto fail = [&](Error err_type)
+        {
+            // todo: add error handling support for label and subroutine.
+            ErrorInfo err;
+            switch (err_type)
+            {
+                case Error::InvalidAddress:
+                    err.msg = "non-numeric address is invalid";
+                    break;
+                case Error::OutOfBoundAddress:
+                    err.msg = "address out of bound (use 0-255)";
+                    break;
+                case Error::InvalidImmediateData:
+                    err.msg = "non-numeric immediate data is invalid";
+                    break;
+                case Error::OutOfBoundImmediateData:
+                    err.msg = "immediate out of bound (use 0-255)";
+                    break;
+                default:
+                    err.msg = "unknown";
+                    break;
+            }
+
+            err.data = opr;
+            err.type = err_type;
+            console_error(err);
+            exit(0);
+        };
+
+        if (validate_numeric(opr) == 0) fail((type == Operand::Imm ? Error::InvalidImmediateData : Error::InvalidImmediateData));
+        
         int val = std::stoi(opr);
-        if (val > 255) return 1;
+        if (val > 255) fail((type == Operand::Imm ? Error::OutOfBoundImmediateData : Error::OutOfBoundAddress));
 
         if (opr.length() <= 1) opr.insert(0, 2 - opr.length(), '0');
     }
@@ -43,22 +74,34 @@ bool validate_and_parse_operand(std::string& opr, const Operand type)
     {
         if (*opr.rbegin() == ',') opr.pop_back();
 
-        auto fail = [&]()
+        auto fail = [&](Error err_type)
         {
-            ErrorInfo err{opr, "register not available (use R0-R15)", Error::InvalidRegister};
+            ErrorInfo err;
+            switch (err_type)
+            {
+                case Error::InvalidRegister:
+                    err.msg = "non-numeric register is invalid";
+                    break;
+                case Error::OutOfBoundRegister:
+                    err.msg = "register out of bound (use R0-R15)";
+                    break;
+                default:
+                    err.msg = "unknown";
+                    break;
+            }
+
+            err.data = opr;
+            err.type = err_type;
             console_error(err);
             exit(0);
         };
         
-        if (opr.size() <= 1 && opr.size() > 3 || (opr[0] != 'R' && opr[0] != 'r')) fail();
+        if (opr.size() <= 1 && opr.size() > 3 || (opr[0] != 'R' && opr[0] != 'r')) fail(Error::InvalidRegister);
 
-        for (size_t i = 1; i < opr.size(); ++i)
-        {
-            if (!std::isdigit(static_cast<unsigned char>(opr[i]))) fail();
-        }
+        if (validate_numeric(opr.substr(1)) == 0) fail(Error::InvalidRegister);
         
         int val = std::stoi(opr.substr(1));
-        if (val > 15) fail();
+        if (val > 15) fail(Error::OutOfBoundRegister);
     
         opr = int_to_hex(static_cast<uint8_t>(val));
         opr.erase(opr.begin());
@@ -67,7 +110,7 @@ bool validate_and_parse_operand(std::string& opr, const Operand type)
     return 0;
 }
     
-// complete processing of OPCODEs, OPERANDs, and Immidiate Data should be done here.
+// imp: complete processing of OPCODEs, OPERANDs, and Immidiate Data should be done here.
 // next stages relie on this code functioning as intended.
 void parse_data(const std::vector<std::string>& raw, std::vector<std::string>& data)
 {
@@ -93,12 +136,7 @@ void parse_data(const std::vector<std::string>& raw, std::vector<std::string>& d
                     std::string opr = raw[i + offset];
                     offset++;
                     
-                    // todo: change loop i to skip remaining operands.
-                    if (validate_and_parse_operand(opr, type) == 1) 
-                    {
-                        break;
-                    }
-
+                    validate_and_parse_operand(opr, type);
                     processed_word += opr;
                 }
             }
